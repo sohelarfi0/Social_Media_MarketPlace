@@ -1,0 +1,125 @@
+import { ChevronDown, Filter, X } from 'lucide-react'
+import React  from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
+
+const FilterSidebar = ({showFilterPhone, setShowFilterPhone, filters, setFilters}) => {
+
+    const navigate =useNavigate()
+    const [searchParams, setSearchParams] =useSearchParams()
+    const [search, setSearch] = useState(searchParams.get('search') || '')
+
+    const onChangeSeaarch =(e)=>{
+        if(e.target.value){
+            setSearchParams({search: e.target.value})
+            setSearch(e.target.value)
+        }
+        else{
+            navigate(`/marketplace`)
+            setSearch('')
+        }
+    }
+
+    const [expandedSections, setExpandedSections] = useState({
+        platform: true,
+        price:true,
+        followers:true,
+        niche: true,
+        status: true,
+    })
+
+    const toggleSection = (section)=>{
+        setExpandedSections((prev)=>({...prev, [section]: !prev[section]}))
+
+    }
+
+    const platforms = [
+        {value: 'youtube', label: 'YouTube'},
+        {value: 'instagram', label: 'Instagram'},
+        {value: 'tiktok', label: 'TikTok'},
+        {value: 'twitter', label: 'Twitter'},
+        {value: 'facebook', label: 'Facebook'},
+        {value: 'twitch', label: 'Twitch'},
+        {value:'discord', label: 'Discord'},
+    ]
+
+    const onFiltersChange = (newFilters)=>{
+        setFilters(newFilters)
+    }
+
+
+  return (
+    <div className={`${showFilterPhone ? "max-sm:fixed" : "max-sm:hidden"} max-sm:inset-0 z-100 max-sm:h-screen max-sm:overflow-scroll
+    bg-white rounded-lg shadow-sm border border-gray-200 h-fit sticky top-24md:min-w-[300px]`}>
+<div className='p-4 border-b  border-gray-200'>
+    <div className='flex items-center justify-between'>
+        <div className='flex items-center space-x-2 text-gray-700'>
+            <Filter className='size-4'/>
+            <h3 className='font-semibold'>Filters</h3>
+
+        </div>
+        <div className='flex items-center gap-2'>
+            <X className='size-6 text-gray-500 hover:text-gray-700 p-1
+            hover:bg-gray-100 rounded transition-colors cursor-pointer'/>
+            <button onClick={()=>setShowFilterPhone(false)} className='sm:hidden text-sm border text-gray-700 px-3 py-1 rounded'>
+                Apply
+            </button>
+        </div>
+
+
+    </div>
+</div>
+
+   <div className='p-4 space-y-6 sm:max-h-[calc(100vh)] overflow-y-scroll
+   no-scrollbar'>
+    <div className='flex items-center justify-between'>
+        <input type="text" placeholder='Search by username, platform, niche, etc.'
+        className='w-full text-sm px-3 py-2 border
+         border-gray-300rounded-md outline-indigo-500' 
+         onChange={onChangeSeaarch} value={search}
+         />
+
+    </div>
+
+    <div>
+        <button onClick={()=> toggleSection('platform')}
+            className='flex items-center justify-between w-full mb-3'>
+
+            <label>Platform</label>
+            <ChevronDown className={`size-4 transition-transform ${expandedSections.platform ?
+                'rotate-180' : ""
+            }`}/>
+        </button>
+        {expandedSections.platform && (
+            <div className='flex flex-col gap-2'>
+                {platforms.map((platform)=>(
+                    <label key={platform.value} className='flex items-center gap-2 text-gray-700 text-sm'>
+                       
+                        <input type="checkbox"
+                         checked={filters.platform?.includes(platform.value) || false }
+                         onChange={(e)=>{
+                            const checked = e.target.checked;
+                            const current = filters.platform || [];
+                            const updated = checked ? [...current, 
+                                platform.value]: current.filter((p)=> p !== platform.value);
+                            
+                                onFiltersChange({
+                                    ...filters,
+                                    platform: updated.length > 0 ? updated : null
+                                })
+
+
+                        }} />
+                        <span>{platform.label}</span>
+                    </label>
+                ))}
+            </div>
+        )}
+    </div>
+
+   </div>
+    </div>
+  )
+}
+
+export default FilterSidebar
