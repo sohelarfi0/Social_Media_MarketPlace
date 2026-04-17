@@ -9,8 +9,7 @@ import MyOrders from './pages/MyOrders.jsx'
 import Messages from './pages/Messages.jsx'
 import Loading from './pages/Loading.jsx'
 import Navbar from './components/Navbar.jsx'
-
-
+import ChatBox from './components/chatBox.jsx'
 
 
 const App = () => {
@@ -23,13 +22,15 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/my-listings" element={<MyListings />} />
-        <Route path="/listings/:listingId" element={<ListingDetails />} />
+        <Route path="/listing/:listingId" element={<ListingDetails />} />
         <Route path="/create-listings" element={<ManageListings />} />
         <Route path="/edit-listings/:id" element={<ManageListings />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/loading" element={<Loading />} />
+      
       </Routes>
+      <ChatBox />
     </div>
   )
 }
