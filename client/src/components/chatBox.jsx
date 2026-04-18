@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { dummyChats } from '../assets/assets';
 import { X } from 'lucide-react';
 import { clearChat } from '../app/features/chatSlice';
+import {format} from 'date-fns'
 
 const ChatBox = () => {
     const {listing, isOpen, chatId} = useSelector((state)=>state.chat)
@@ -24,6 +25,7 @@ const ChatBox = () => {
 
     }
 
+
     useEffect(()=>{
         if(!isOpen){
             setChat(null)
@@ -39,6 +41,15 @@ const ChatBox = () => {
             fetchChat()
         }
     },[listing])
+
+    //  For Auto Scroll
+
+    const messagesEndRef = useRef(null)
+
+    useEffect(()=>{
+        messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
+    },[messages.length])
+
 
     if(!isOpen || !listing) return null
 
@@ -61,7 +72,7 @@ const ChatBox = () => {
             <X className='w-5 h-5' />
             </button>
         </div>
-        </div>
+        
 
         {/* Messages Area */}
         <div className=' flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100'>
@@ -84,12 +95,33 @@ const ChatBox = () => {
                             {message.message}
                         </p>
                         <p className={`text-[10px] mt-1 ${message.sender_id === user.id ? "text-indigo-200" : "text-gray-400"}`}>
-                            {new Date(message.createdAt).toLocaleTimeString()}
+                            {format(new Date(message.createdAt), "MMM dd 'at' h:mm a")}
+
                         </p>
                     </div>
                 </div>
                ))
             )}
+            <div ref={messagesEndRef} /> 
+
+            
+        </div>
+        {/* Input Area */}
+        { chat?.listing?.status === "active" ?
+        (
+            <form className='p-4 bg-white border-t border-gray-200 rounded-b-lg'>
+                <div className='flex items-end space-x-2'>
+                    <textarea placeholder='Type your message...' className='flex-1 resize-non border-gray-300 rounded-lg px-4 py-2
+                    focus:outline-indigo-500 max-h-32' rows={1}/>
+
+                    
+                </div>
+            </form>
+        ):(
+            <div className="p-4 bg-white border-gray-200 rounded-b-lg">
+            <p>{chat ? `Listing is ${chat?.listing?.status}`:"Loading chat..."}</p>
+            </div>
+        )}
         </div>
 
     </div>
