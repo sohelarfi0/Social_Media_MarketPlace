@@ -3,6 +3,7 @@ import { assets } from '../assets/assets'
 import { Link, useNavigate } from 'react-router-dom'
 import { BoxIcon, GripIcon, MenuIcon, MessageCircleMoreIcon, XIcon } from 'lucide-react'
 import {useUser, useClerk, UserButton} from '@clerk/clerk-react'
+import { MessageCircle, ListIcon } from 'lucide-react'
 
 
 const Navbar = () => {
@@ -12,6 +13,7 @@ const Navbar = () => {
 
     const [menuOpen, setMenuOpen] = React.useState(false)
     const navigate = useNavigate()
+    
 
 
 
@@ -48,7 +50,7 @@ const Navbar = () => {
                             </UserButton.MenuItems>
 
                                 <UserButton.MenuItems>
-                                <UserButton.Action label='Messages' labelIcon={<MessageCircleMoreI 
+                                <UserButton.Action label='Messages' labelIcon={<MessageCircle
                                 size={16} />} onClick={()=> navigate('/messages')}/>
                             </UserButton.MenuItems>
 

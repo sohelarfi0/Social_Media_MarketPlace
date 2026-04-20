@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { dummyChats } from '../assets/assets';
-import { X } from 'lucide-react';
+import { X ,Loader2Icon, Send} from 'lucide-react';
 import { clearChat } from '../app/features/chatSlice';
 import {format} from 'date-fns'
 
@@ -24,6 +24,7 @@ const ChatBox = () => {
         setIsLoading(false)
 
     }
+
 
 
     useEffect(()=>{
@@ -49,6 +50,15 @@ const ChatBox = () => {
     useEffect(()=>{
         messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
     },[messages.length])
+
+
+    const handleSendMessage = async (e)=> {
+        e.preventDefault();
+        if(!newMessage.trim() || isSending) return ;
+        setMessages([...messages, {id: Date.now(), chatId: chat.id, sender_id: user.id, message: newMessage, createdAt: new Date()}]);
+        setNewMessage("")
+
+    }
 
 
     if(!isOpen || !listing) return null
@@ -109,17 +119,36 @@ const ChatBox = () => {
         {/* Input Area */}
         { chat?.listing?.status === "active" ?
         (
-            <form className='p-4 bg-white border-t border-gray-200 rounded-b-lg'>
+            <form onSubmit={handleSendMessage} className='p-4 bg-white border-t border-gray-200 rounded-b-lg'>
                 <div className='flex items-end space-x-2'>
-                    <textarea placeholder='Type your message...' className='flex-1 resize-non border-gray-300 rounded-lg px-4 py-2
+                   
+                    <textarea 
+                    value={newMessage}
+                    onChange={(e)=>setNewMessage(e.target.value)}
+                    onKeyDown={(e)=>{
+                        if(e.key === "Enter" && !e.shiftKey){
+                            e.preventDefault();
+                            handleSendMessage(e);
+                        }
+                    }}
+                    
+                    
+                    placeholder='Type your message...' className='flex-1 resize-non border-gray-300 rounded-lg px-4 py-2
                     focus:outline-indigo-500 max-h-32' rows={1}/>
+                    <button disabled={!newMessage.trim() || isSending} 
+                    type='submit' className='bg-indigo-600 hover:bg-indigo=700
+                    text-white p-2.5 rounded-lg disabled:opacity-50 transition-colors'>
+                        {isSending ? 
+                        <Loader2Icon  className='w-5 h-5 animate-spin'/>
+                    : <Send className='w-5 h-5'/>}
+                    </button>
 
                     
                 </div>
             </form>
         ):(
             <div className="p-4 bg-white border-gray-200 rounded-b-lg">
-            <p>{chat ? `Listing is ${chat?.listing?.status}`:"Loading chat..."}</p>
+            <p className='text-sm text-gray-600 text-center'>{chat ? `Listing is ${chat?.listing?.status}`:"Loading chat..."}</p>
             </div>
         )}
         </div>
