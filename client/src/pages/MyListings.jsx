@@ -1,14 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {useSelector} from 'react-redux'
 import {useNavigate} from 'react-router-dom'
 import { WalletIcon, ArrowDownCircleIcon, CoinsIcon, Plus, Eye, CheckCircle, TrendingUp, DollarSign, StarIcon , LockIcon, Users, BanIcon, XCircle, Clock, TrashIcon, Edit, EyeOffIcon, EyeIcon} from 'lucide-react'
 import StatCard from '../components/StatCard.jsx'
 import {platformIcons} from '../assets/assets.jsx'
+import CredentialSubmission from '../components/CredentialSubmission.jsx'
+import WithdrawModal from '../components/WithdrawModal.jsx'
+
+
+
+
+
 const MyListings = () => {
   const {userListings, balance} =useSelector((state)=>state.listing)
   const currency = import.meta.env.VITE_CURRENCY || '$';
   const navigate = useNavigate()
 
+  const [showCredentialSubmission, setShowCredentialSubmission] = useState(null)
+  const [showWithdrawal, setShowWithdrawal] = useState(null)
+  
   const totalValue = userListings.reduce((sum, listing)=>sum + (listing.price || 0), 0 );
   const activeListings = userListings.filter((listing)=>listing.status === 'active').length;
 
@@ -60,6 +70,19 @@ const MyListings = () => {
       }
   }
 
+
+  const  toggleStatus = async(listingId)=>{
+
+  }
+  const deleteListing = async (listingId) =>{
+
+  }
+
+  const markAsFeatured =async(listingId)=>{
+
+  }
+
+
   return (
     <div className='px-6 md:px-16 lg:px-24 xl:px-32 pt-8'>
       {/* Header */}
@@ -92,7 +115,9 @@ const MyListings = () => {
                 {label: 'Withdrawn', value: balance.withdrawn, icon: ArrowDownCircleIcon},
                 {label: 'Available', value: balance.available, icon: CoinsIcon},
             ].map((item, index)=>(
-                <div key={index} className='flex flex-1 items-center justify-between p-4
+                <div onClick={()=> item.label === "Available" && setShowWithdrawal(true)}
+                
+                key={index} className='flex flex-1 items-center justify-between p-4
                 rounded-lg border border-gray-100 cursor-pointer'>
                     <div className='flex items-center gap-3'>
                         <item.icon className='text-gray-500 w-6 h-6'/>
@@ -141,7 +166,8 @@ const MyListings = () => {
                                   <div className='bg0white text-gray-600 text-xs rounded border border-gray-200 p-2 px-3'>
                                     {!listing.isCredentialSubmitted && (
                                       <>
-                                      <button className='flex items-center gap-2 text-nowrap'>Add Credentials</button>
+                                      <button onClick={()=> setShowCredentialSubmission(listing)}
+                                      className='flex items-center gap-2 text-nowrap'>Add Credentials</button>
                                       <hr  className='border-gray-200 my-2'/>
 
                                       </>
@@ -165,7 +191,7 @@ const MyListings = () => {
                                 </div>
                               </div>
                               {listing.status === 'active' && (
-                                <StarIcon size={18}
+                                <StarIcon onClick={()=> markAsFeatured(listing.id) } size={18}
                                 className={`text-yellow-500 cursor-pointr ${listing.featured && "fill-yellow-500"}`}
                                 
                                 />
@@ -201,17 +227,17 @@ const MyListings = () => {
                           <div className='flex items-center space-x-2'>
                             {listing.status !== "sold" &&
                             (
-                              <button className='p-2 border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-red-500'>
+                              <button onClick={()=> deleteListing(listing.id)} className='p-2 border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-red-500'>
                                 <TrashIcon className='size-4'/>
 
                               </button>
                             )}
-                            <button className='p-2 border border-gray-300 rounded-lg
+                            <button onClick={()=> navigate(`/edit-listing/${listing.id}`)} className='p-2 border border-gray-300 rounded-lg
                             hover:bg-gray-50 hover:text-indigo-600'>
                               <Edit className='size-4'/>
 
                             </button>
-                            <button className='p-2 border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-600'>
+                            <button onClick={()=> toggleStatus(listing.id)} className='p-2 border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-600'>
                               {listing.status === "active" && (<EyeOffIcon className='size-4'/>)}
                               {listing.status !== "active" && (<EyeIcon className='size-4' />)}
                             </button>
@@ -226,6 +252,27 @@ const MyListings = () => {
               </div>
 
             )}
+            {showCredentialSubmission && (
+              <CredentialSubmission listing={showCredentialSubmission}
+              onClose={()=>setShowCredentialSubmission(null)}/>
+
+            )}
+
+            {showWithdrawal && (
+              <WithdrawModal onClose={()=> setShowWithdrawal(null)}/>
+              
+            )}
+
+
+
+             {/* Footer */}
+        <div className='bg-white border-t border-gray-200 p-4 text-center mt-28'>
+          <p className='text-sm text-gray-500'>
+            @ 2026 <span className='text-indigo-600'>Flipearn</span>.All rights reserved.
+          </p>
+        </div>
+
+    
 
     </div>
   )

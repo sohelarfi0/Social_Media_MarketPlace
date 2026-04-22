@@ -10,20 +10,21 @@ import Messages from './pages/Messages.jsx'
 import Loading from './pages/Loading.jsx'
 import Navbar from './components/Navbar.jsx'
 import ChatBox from './components/chatBox.jsx'
-
+import {Toaster} from 'react-hot-toast'
 
 const App = () => {
   const {pathname}=useLocation();
 
   return (
     <div>
+      <Toaster/>
       {!pathname.includes('/admin') && <Navbar/>}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/my-listings" element={<MyListings />} />
         <Route path="/listing/:listingId" element={<ListingDetails />} />
-        <Route path="/create-listings" element={<ManageListings />} />
+        <Route path="/create-listing" element={<ManageListings />} />
         <Route path="/edit-listings/:id" element={<ManageListings />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/my-orders" element={<MyOrders />} />
