@@ -232,7 +232,7 @@ const MyListings = () => {
 
                               </button>
                             )}
-                            <button onClick={()=> navigate(`/edit-listing/${listing.id}`)} className='p-2 border border-gray-300 rounded-lg
+                            <button onClick={()=> navigate(`/edit-listings/${listing.id}`)} className='p-2 border border-gray-300 rounded-lg
                             hover:bg-gray-50 hover:text-indigo-600'>
                               <Edit className='size-4'/>
 

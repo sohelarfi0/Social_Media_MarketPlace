@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React, { Children, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
-import {toast}  from 'react-router-dom'
+import {toast}  from 'react-hot-toast'
+import {Loader2Icon} from 'lucide-react'
+
+
 const ManageListings = () => {
   const {id} = useParams()
   const navigate = useNavigate()
@@ -61,11 +64,135 @@ const ManageListings = () => {
   }
 
 
-//  get listing data for edit if 'id' 
+//  get listing data for edit if 'id' is provided
+useEffect(()=>{
+  if(!id){
+    setIsEditing(false)
+    return;
+  }
 
-  return (
-    <div></div>
+  const listing = userListings.find((listing)=>listing.id === id)
+  if(listing){
+    setIsEditing(true)
+    setFromData(listing)
+  }
+  else{
+    setIsEditing(false)
+    toast.error("Listing not found")
+    navigate("/my-listings")
+  }
+},[id, userListings, navigate])
+
+const handleSubmit = async (e)=>{
+  e.preventDefault();
+}
+if(loadingListing){
+  return(
+    <div className='h-screen flex items-center justify-center'>
+      <Loader2Icon className=' size-7 animate-spin text-indigo-600'/>
+
+
+    </div>
   )
 }
+
+
+  return (
+    <div className='min-h-screen py-8'>
+     <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
+      <div className='mb-8'>
+        <h1 className='text-3xl font-bold text-gray-800'>
+          {isEditing ? "Edit Listing" : "List Your Account"}
+        </h1>
+        <p className='text-gray-600 mt-2'>
+          {isEditing ? 'Update your existing account listing' : 'Create a mock listing to display your account info'}
+        </p>
+      </div>
+      <form onSubmit={handleSubmit} className='space-y-8' >
+        {/* Basic Info */}
+        <Section title='Basic Information'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <InputField label='Listing Title *' value={formData.title}
+            placeholder='e.g., Premium Travel Instagram Account ' onChange={(v)=>handleInputChange('title', v)} required={true} />
+          <SelectField label='Platform *' options={platforms} value={formData.platform}
+          onChange={(v)=> handleInputChange('platform', v)}
+          required={true}/>
+
+          <InputField label='Username/Handle *' value={formData.username}
+            placeholder='@username' onChange={(v)=>handleInputChange('username', v)} required={true} />
+
+          <SelectField label='Niche/Category *' options={niches} value={formData.niche}
+          onChange={(v)=> handleInputChange('niche', v)}
+          required={true}/>
+  
+          </div>
+
+        </Section>
+        {/* Metrics */}
+        <Section title='Account Metrics'>
+          <div className='grid grid-cols-1
+           md:grid-cols-3 gap-6 mb-6'>
+            <InputField label='Followers Count *' value={formData.folloers_count}
+            placeholder='10000' onChange={(v)=>handleInputChange('followers_count', v)} required={true} />
+            
+            <InputField label='Engagement Rate (%) *' type='number' min={0} max={100}
+             value={formData.engagement_rate}
+            placeholder='4' onChange={(v)=>handleInputChange('engagement_rate', v)}
+              />
+
+            <InputField label='Monthly Views/Impressions *' type='number' min={0}  value={formData.monthly_views}
+            placeholder='1000000' onChange={(v)=>handleInputChange('monthly_views', v)} />
+
+
+
+
+
+          </div>
+
+        </Section>
+      </form>
+      </div>
+
+    </div>
+  )
+}
+
+//  common elements
+const Section = ({title, children})=>(
+  <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-6'>
+    <h2 className='text-lg font-semibold text-gray-800'>{title}</h2>
+    {children}
+  </div>
+)
+
+const InputField = ({label, value, onChange, placeholder, type = 'text', required = false, min= null , max = null })=>(
+  <div>
+  <label className='block text-sm font-medium text-gray-700 mb-2'>
+    {label}</label>
+    <input type={type} min={min} max={max} placeholder={placeholder} value={value} onChange={(e)=>onChange(e.target.value)} 
+    className='w-full px-3 py-1.5 text-gray-600 border rounded-md
+    focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-300' />
+
+  </div>
+)
+
+
+const SelectField = ({label, options, value, onChange, required = false})=>(
+  <div>
+    <label className='block text-sm font-medium text-gray-700 mb-2'>{label}</label>
+    <select value={value} onChange={(e)=>onChange(e.target.value)}
+      className='w-full px-3 py-1.5 text-gray-600 border rounded-md
+      focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-300'
+      required={required}>
+        <option value="">Select...</option>
+        {options.map((opt)=>(
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+  </div>
+)
+
+
+
 
 export default ManageListings
