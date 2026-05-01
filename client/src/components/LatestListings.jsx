@@ -4,7 +4,7 @@ import {useSelector} from 'react-redux'
 import ListingCard from './ListingCard.jsx'
 
 const LatestListings = () => {
-  const {listings} = useSelector(state => state.listing)
+  const {listings = []} = useSelector(state => state.listing)
 
 
   return (

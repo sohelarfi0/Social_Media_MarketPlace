@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import Marketplace from './pages/Marketplace.jsx'
@@ -18,8 +18,27 @@ import CredentialChange from './pages/admin/CredentialChange'
 import CredentialVerify from './pages/admin/CredentialVerify'
 import Transactions from './pages/admin/Transactions'
 import Withdrawal from './pages/admin/Withdrawal.jsx'
+import { useAuth, useUser } from '@clerk/clerk-react'
+import { useDispatch } from 'react-redux'
+import { getAllPublicListing, getAllUserListing } from './app/features/listingSlice.js'
 const App = () => {
   const {pathname}=useLocation();
+  const {getToken} = useAuth();
+    const {user, isLoaded} =useUser()
+
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+      dispatch(getAllPublicListing())
+    },[])
+
+    useEffect(()=>{
+      if( isLoaded && user){
+        dispatch(getAllUserListing())
+      }
+
+    },[isLoaded, user])
+  
 
   return (
     <div>

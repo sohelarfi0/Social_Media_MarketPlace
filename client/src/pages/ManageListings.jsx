@@ -1,14 +1,21 @@
 import React, { Children, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import {toast}  from 'react-hot-toast'
 import {Loader2Icon, Upload, X} from 'lucide-react'
+import { useAuth } from '@clerk/clerk-react'
+import {getAllPublicListing, getAllUserListing} from '../app/features/listingSlice'
+import api from '../components/configs/axios'
 
-
-const ManageListings = () => {
+export const ManageListings = () => {
   const {id} = useParams()
   const navigate = useNavigate()
   const {userListings} = useSelector((state)=>state.listing)
+
+  const {getToken} = useAuth()
+  const dispatch = useDispatch()
+
+
   const [loadingListing, setLoadingListing] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
@@ -34,7 +41,7 @@ const ManageListings = () => {
   ];
   
   const niches = ['lifestyle', 'fitness','food', 
-    'traavel','tech','gaming','fashion','beauty','business','education','enterainment',
+    'travel','tech','gaming','fashion','beauty','business','education','entertainment',
      'music','sports','health','finance','Mixed ages'];
 
   const ageRanges = ['13-17 years', '18-24 years', '25- 34 years', 
@@ -66,10 +73,12 @@ const ManageListings = () => {
 
 //  get listing data for edit if 'id' is provided
 useEffect(()=>{
-  if(!id){
-    setIsEditing(false)
-    return;
-  }
+  if(!id) return;
+  
+    setIsEditing(true)
+    setLoadingListing(true)
+    
+  
 
   const listing = userListings.find((listing)=>listing.id === id)
   if(listing){
@@ -81,11 +90,56 @@ useEffect(()=>{
     toast.error("Listing not found")
     navigate("/my-listings")
   }
-},[id, userListings, navigate])
+  setLoadingListing(false)
+},[id])
 
 const handleSubmit = async (e)=>{
   e.preventDefault();
+  toast.loading("Saving...")
+  const dataCopy = structuredClone(formData)
+  try{
+    if(isEditing){
+      dataCopy.images =formData.images.filter((image)=> typeof image === "string")
+
+      const formDataInstance = new FormData()
+      formDataInstance.append('accountDetails', JSON.stringify(dataCopy))
+
+      formData.images.filter((image)=> typeof image !== 'string').forEach((image)=>{formDataInstance.append('image',image)})
+
+      const token = await getToken()
+
+      const {data} =await api.put('/api/listing', formDataInstance,
+        {headers: {Authorization: `Bearer ${token}`}}
+      )
+      toast.dismissAll()
+      toast.success(data.message)
+      dispatch(getAllUserListing({getToken}))
+      dispatch(getAllPublicListing())
+      navigate('/my-listing')
+
+  }else{
+    delete dataCopy.images;
+
+    const formDataInstance = new FormData();
+    formDataInstance.append('accountDetails', JSON.stringify(dataCopy));
+    formData.images.forEach((image)=>{
+      formDataInstance.append('images', image)
+    })
+
+    const token = await getToken()
+    const {data} =await api.post('/api/listing', formDataInstance,
+      {headers: {Authorization: `Bearer ${token} `}}
+    )
+
+  }
+
+}catch(error){
+  console.log()
+
 }
+}
+
+
 if(loadingListing){
   return(
     <div className='h-screen flex items-center justify-center'>
@@ -132,7 +186,7 @@ if(loadingListing){
         <Section title='Account Metrics'>
           <div className='grid grid-cols-1
            md:grid-cols-3 gap-6 mb-6'>
-            <InputField label='Followers Count *' value={formData.folloers_count}
+            <InputField label='Followers Count *' value={formData.followers_count}
             placeholder='10000' onChange={(v)=>handleInputChange('followers_count', v)} required={true} />
             
             <InputField label='Engagement Rate (%) *' type='number' min={0} max={100}
@@ -281,9 +335,3 @@ const TextareaField = ({label, value, onChange, required = false})=>(
     required={required}/>
   </div>
 )
-
-
-
-
-
-export default ManageListings
