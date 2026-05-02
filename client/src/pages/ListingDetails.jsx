@@ -6,11 +6,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon,ChevronRightIcon, DollarSign, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
 import { setChat } from '../app/features/chatSlice';
-
+import { useUser } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
 
 const ListingDetails = () => {
 
   const dispatch = useDispatch()
+  const {user, isLoaded} = useUser()
 
   const navigate = useNavigate();
   const currency = import.meta.env.VITE_CURRENCY || '$';  
@@ -32,6 +34,8 @@ const ListingDetails = () => {
   }
 
   const loadChatbox = ()=>{
+    if(!isLoaded || user ) return toast("Please login to chat with seller")
+      if(user.id === listing.ownerId) return toast("You can not chat with your own listing ")
     dispatch(setChat({listing: listing}))
 
 
