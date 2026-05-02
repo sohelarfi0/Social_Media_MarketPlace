@@ -5,6 +5,7 @@ import WithdrawalDetail from '../../components/admin/WithdrawalDetail';
 import { dummyWithdrawalRequests } from '../../assets/assets';
 
 const Withdrawal = () => {
+
     const currency = import.meta.env.VITE_CURRENCY || '$';
 
     const [requests, setRequests] = useState([]);
