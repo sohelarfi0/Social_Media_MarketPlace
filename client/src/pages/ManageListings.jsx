@@ -6,8 +6,7 @@ import {Loader2Icon, Upload, X} from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 import {getAllPublicListing, getAllUserListing} from '../app/features/listingSlice'
 import api from '../components/configs/axios'
-
-export const ManageListings = () => {
+const ManageListings = () => {
   const {id} = useParams()
   const navigate = useNavigate()
   const {userListings} = useSelector((state)=>state.listing)
@@ -128,13 +127,20 @@ const handleSubmit = async (e)=>{
 
     const token = await getToken()
     const {data} =await api.post('/api/listing', formDataInstance,
-      {headers: {Authorization: `Bearer ${token} `}}
-    )
+      {headers: {Authorization: `Bearer ${token} `}})
+      toast.dismissAll()
+      toast.success(data.message)
+      dispatch(getAllUserListing({getToken}))
+      dispatch(getAllPublicListing())
+      navigate('/my-listing')
+
+    
 
   }
 
 }catch(error){
-  console.log()
+  toast.dismissAll();
+  toast.error(error?.response?.data?.message || error.message);
 
 }
 }
@@ -335,3 +341,12 @@ const TextareaField = ({label, value, onChange, required = false})=>(
     required={required}/>
   </div>
 )
+
+
+
+
+
+
+
+
+export default ManageListings;

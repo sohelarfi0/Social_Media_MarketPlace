@@ -1,7 +1,7 @@
 import express from 'express';
 import {protect } from "../middlewares/authMiddleware.js";
 import upload from "../configs/multer.js";
-import { addCredential, addListing, deleteUserListing, getAllPublicListing, getAllUserListing, getAllUserOrders, markFeatured, purchaseAccount, toggleStatus, updateListing, withdrwanAmount } from '../controllers/listingsController';
+import { addCredential, addListing, deleteUserListing, getAllPublicListing, getAllUserListing, getAllUserOrders, markFeatured, purchaseAccount, toggleStatus, updateListing, withdrwanAmount } from '../controllers/listingsController.js';
 
 const listingRouter = express.Router();
 

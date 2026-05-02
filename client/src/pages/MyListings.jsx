@@ -1,20 +1,26 @@
 import React, { useState } from 'react'
-import {useSelector} from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
 import {useNavigate} from 'react-router-dom'
 import { WalletIcon, ArrowDownCircleIcon, CoinsIcon, Plus, Eye, CheckCircle, TrendingUp, DollarSign, StarIcon , LockIcon, Users, BanIcon, XCircle, Clock, TrashIcon, Edit, EyeOffIcon, EyeIcon} from 'lucide-react'
 import StatCard from '../components/StatCard.jsx'
 import {platformIcons} from '../assets/assets.jsx'
 import CredentialSubmission from '../components/CredentialSubmission.jsx'
 import WithdrawModal from '../components/WithdrawModal.jsx'
-
+import {useAuth} from '@clerk/clerk-react'
+import toast from 'react-hot-toast'
+import api from "../components/configs/axios.js"
+import {getAllUserListing} from '../app/features/listingSlice.js'
+import {getAllPublicListing} from '../app/features/listingSlice.js'
 
 
 
 
 const MyListings = () => {
-  const {userListings, balance} =useSelector((state)=>state.listing)
+  const {userListings = [], balance={ earned: 0, withdrawn: 0, available: 0 } } =useSelector((state)=>state.listing)
   const currency = import.meta.env.VITE_CURRENCY || '$';
   const navigate = useNavigate()
+  const {getToken} = useAuth()
+  const dispatch = useDispatch()
 
   const [showCredentialSubmission, setShowCredentialSubmission] = useState(null)
   const [showWithdrawal, setShowWithdrawal] = useState(null)
@@ -72,9 +78,41 @@ const MyListings = () => {
 
 
   const  toggleStatus = async(listingId)=>{
+    try{
+      toast.loading("Uploading listing status...")
+      const token = await getToken();
+      const {data} = await api.put(`/api/listing/${listingId}/status`,{},
+        {headers: {Authorization: `Bearer ${token}`}}
+      )
+      dispatch(getAllUserListing({getToken}))
+      dispatch(getAllPublicListing())
+      toast.dismissAll();
+      toast.success(data.message);
+
+    }catch(error){
+      toast.dispatchAll();
+      toast.error(error?.response?.data?.message || error.message
+      )
+    }
 
   }
   const deleteListing = async (listingId) =>{
+     try{
+      toast.loading("Uploading listing status...")
+      const token = await getToken();
+      const {data} = await api.put(`/api/listing/${listingId}/status`,{},
+        {headers: {Authorization: `Bearer ${token}`}}
+      )
+      dispatch(getAllUserListing({getToken}))
+      dispatch(getAllPublicListing())
+      toast.dismissAll();
+      toast.success(data.message);
+
+    }catch(error){
+      toast.dispatchAll();
+      toast.error(error?.response?.data?.message || error.message
+      )
+    }
 
   }
 
