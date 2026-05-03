@@ -1,14 +1,14 @@
 export const  protect = async (req , res , next)=>{
     try{
         const {userId, has} = await req.auth();
+        const isAdmin = process.env.ADMIN_EMAILD.split(",").includes(userId.emailAddresses[0].emailAddress);
 
-        if(!userId){
-            return res.status(401).json({message:"Unauthorized"})
+        if(!isAdmin){
+            return res.status(401).json({message: "Unauthorized"});
         }
-        const hasPremiumPlan = await has({plan: 'premium'});
-        req.plan = hasPremiumPlan ? 'premium' : 'free';
         return next()
 
+        
     }
     catch(error)
     {
