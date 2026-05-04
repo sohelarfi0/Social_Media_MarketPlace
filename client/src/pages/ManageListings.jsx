@@ -5,7 +5,7 @@ import {toast}  from 'react-hot-toast'
 import {Loader2Icon, Upload, X} from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 import {getAllPublicListing, getAllUserListing} from '../app/features/listingSlice'
-import api from '../components/configs/axios'
+import api from '../configs/axios.js'
 const ManageListings = () => {
   const {id} = useParams()
   const navigate = useNavigate()

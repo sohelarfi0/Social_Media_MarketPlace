@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { dummyChats } from '../assets/assets';
 import { X ,Loader2Icon, Send} from 'lucide-react';
 import { clearChat } from '../app/features/chatSlice';
 import {format} from 'date-fns'
 import { useAuth, useUser } from '@clerk/clerk-react';
-import api from './configs/axios';
+import api from '../configs/axios.js';
 import toast from 'react-hot-toast';
 
 const ChatBox = () => {

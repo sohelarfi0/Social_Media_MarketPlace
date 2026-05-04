@@ -3,18 +3,19 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
 import CredentialChangeModal from '../../components/admin/CredentialChangeModal';
-import { dummyListings } from '../../assets/assets';
-
 const CredentialChange = () => {
 
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(null);
+    
 
     const fetchAllUnchangedListings = async () => {
-        setListings(dummyListings);
+        setListings();
         setLoading(false);
     };
+
+    
 
     useEffect(() => {
         fetchAllUnchangedListings();

@@ -4,7 +4,7 @@ import { CirclePlus, X } from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 import { useDispatch } from 'react-redux'
 import api from "../configs/axios.js"
-import getAllUserListing from '../app/features/listingSlice.js'
+import {getAllUserListing} from '../app/features/listingSlice.js'
 
 const CredentialSubmission = ({onClose, listing}) => {
     

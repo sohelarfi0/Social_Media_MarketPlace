@@ -8,7 +8,7 @@ import CredentialSubmission from '../components/CredentialSubmission.jsx'
 import WithdrawModal from '../components/WithdrawModal.jsx'
 import {useAuth} from '@clerk/clerk-react'
 import toast from 'react-hot-toast'
-import api from "../components/configs/axios.js"
+import api from "../configs/axios.js"
 import {getAllUserListing} from '../app/features/listingSlice.js'
 import {getAllPublicListing} from '../app/features/listingSlice.js'
 

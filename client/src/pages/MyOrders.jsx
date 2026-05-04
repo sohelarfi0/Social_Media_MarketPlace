@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { Loader2Icon, CheckCircle2, ChevronUp, Copy } from 'lucide-react';
 import {format} from 'date-fns'
 import { useAuth, useUser } from '@clerk/clerk-react';
-import api from '../components/configs/axios';
+import api from '../configs/axios.js';
 
 const MyOrders = () => {
 

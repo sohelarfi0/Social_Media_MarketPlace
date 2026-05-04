@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { dummyChats } from '../assets/assets';
 import { Search , MessageCircle} from 'lucide-react';
 import { format, isToday, isYesterday, parseISO } from 'date-fns'
 import { useDispatch } from 'react-redux';
 import { setChat } from '../app/features/chatSlice';
 import { useAuth, useUser } from '@clerk/clerk-react';
-import api from '../components/configs/axios';
+import api from '../configs/axios.js';
 import toast from 'react-hot-toast';
 
 const Messages = () => {

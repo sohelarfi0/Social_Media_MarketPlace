@@ -1,5 +1,5 @@
 import {authenticateRequest, clerkClient} from '@clerk/express'
-import prisma from '../configs/prisma';
+import prisma from '../configs/prisma.js';
 
 
 // controller for checking if user is admin
@@ -267,6 +267,17 @@ export const markWithdrawalAsPaid = async (req, res)=>{
                 return res.status(404).json({message: "Withdrawal not found"});
 
             }
+            if(withdrawal.isWithdrawn){
+                return res.status(400).json({message: "Withdrawal already marked as paid"});
+
+            }
+            await prisma.withdrawal.update({
+                where: {id},
+                data: {isWithdrawn: true}
+            })
+
+            return res.json({message: "Withdrawal marked as paid"
+            });
         
     }catch(error)
     {
@@ -274,64 +285,3 @@ export const markWithdrawalAsPaid = async (req, res)=>{
         res.status(400).json({message: error.code || error.message});
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export const  protectAdmin = async (req , res , next)=>{
-//     try{
-//         const {user} = await clerkClient.users.getUser(await req.auth().userId);
-
-//         if(!userId){
-//             return res.status(401).json({message:"Unauthorized"})
-//         }
-//         const hasPremiumPlan = await has({plan: 'premium'});
-//         req.plan = hasPremiumPlan ? 'premium' : 'free';
-//         return next()
-
-//     }
-//     catch(error)
-//     {
-//         console.log(error);
-//         res.status(401).json({message:error.code || error.message});
-//     }
-// }

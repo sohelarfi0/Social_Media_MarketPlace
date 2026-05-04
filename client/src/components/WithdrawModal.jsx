@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import api from './configs/axios';
+import api from '../configs/axios.js';
 import { getAllUserListing } from '../app/features/listingSlice';
 
 const WithdrawModal = ({onClose}) => {

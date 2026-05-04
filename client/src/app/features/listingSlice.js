@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../components/configs/axios";
+import api from "../../configs/axios.js";
 
 
 // get all public listing
