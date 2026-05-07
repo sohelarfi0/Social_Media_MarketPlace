@@ -416,5 +416,33 @@ export const withdrwanAmount = async (req, res)=>{
 
 
 export const purchaseAccount = async (req, res)=>{
+    try {
+        const {userId} = await req.auth();
+        const {listingId} = req.params;
+        const {origin} = req.headers;
+
+        const listing = await prisma.listing.findFirst({
+            where:{ id: listingId, status: 'active'}
+        })
+        if(!listing){
+            return res.status(404).json({message: "Listing not found or not active "});
+        }
+
+        if(listing.ownerId === userId){
+            return res.status(404).json({message: "You canot purchase your own listing"});
+        }
+
+        const transaction = await prisma.transaction.create({
+            data:{
+                listingId,
+                ownerId:listing.ownerId,
+                userId,
+                amount: listing.price
+            }
+        })
+        
+    } catch (error) {
+        
+    }
     
 }
