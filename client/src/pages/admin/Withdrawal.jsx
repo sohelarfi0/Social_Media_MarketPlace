@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
 import AdminTitle from '../../components/admin/AdminTitle';
 import WithdrawalDetail from '../../components/admin/WithdrawalDetail';
-import { dummyWithdrawalRequests } from '../../assets/assets';
+import { useAuth } from '@clerk/clerk-react';
+import api from '../../configs/axios';
+import toast from 'react-hot-toast';
 
 const Withdrawal = () => {
 
@@ -11,10 +13,21 @@ const Withdrawal = () => {
     const [requests, setRequests] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedRequest, setSelectedRequest] = useState(null);
+    const {getToken} = useAuth()
 
     const getRequests = async () => {
-        setRequests(dummyWithdrawalRequests);
-        setIsLoading(false);
+       try {
+        const token = await getToken();
+        const {data} = await api.get('/api/admin/withdraw-requests',
+            {headers: {Authorization: `Bearer ${token}`}}
+        )
+        setRequests(data.requests)
+        setIsLoading(false)
+        
+       } catch (error) {
+        toast.error(error?.response?.data?.message || error.message);
+        console.log(error);
+       }
     };
 
     useEffect(() => {

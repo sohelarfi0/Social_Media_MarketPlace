@@ -20,7 +20,7 @@ export const  protect = async (req , res , next)=>{
 
 export const  protectAdmin = async (req , res , next)=>{
     try{
-        const {user} = await clerkClient.users.getUser(await req.auth().userId);
+        const user = await clerkClient.users.getUser(await req.auth().userId);
 
         if(!userId){
             return res.status(401).json({message:"Unauthorized"})
