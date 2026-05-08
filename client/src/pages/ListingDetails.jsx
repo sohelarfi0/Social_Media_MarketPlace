@@ -6,13 +6,16 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightSquareIcon, Calendar, CheckCircle2, ChevronLeftIcon,ChevronRightIcon, DollarSign, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
 import { setChat } from '../app/features/chatSlice';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth, useClerk, useUser } from '@clerk/clerk-react';
 import toast from 'react-hot-toast';
+import api from '../configs/axios';
 
 const ListingDetails = () => {
 
   const dispatch = useDispatch()
   const {user, isLoaded} = useUser()
+  const {openSignIn} = useClerk()
+  const {getToken} = useAuth()
 
   const navigate = useNavigate();
   const currency = import.meta.env.VITE_CURRENCY || '$';  
@@ -30,6 +33,24 @@ const ListingDetails = () => {
   const nextSlide = ()=> setCurrent((prev)=>(prev === images.length - 1 ? 0 : prev + 1))
 
   const purchaseAccount = async ()=>{
+    try{
+      if(!user){
+        return openSignIn()
+      }
+      toast.loading('creating payment link...')
+      const token = await getToken()
+      const {data} = await api.get(`/api/listing/purchase-account/${listing.id}`,
+        {headers: {Authorization: `Bearer ${token}`}}
+      )
+      toast.dismissAll();
+      window.location.href = data.paymentLink;
+
+
+    }catch(error){
+      toast.dismissAll();
+      toast.error(error?.response?.data?.message ||  error.message);
+      console.log(error);
+    }
 
   }
 

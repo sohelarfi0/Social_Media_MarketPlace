@@ -1,6 +1,7 @@
 import imagekit from '../configs/imageKit.js';
 import prisma from '../configs/prisma.js';
 import fs from 'fs';
+import Stripe from 'stripe';
 
 
 // controller function for adding listing to database
@@ -440,8 +441,41 @@ export const purchaseAccount = async (req, res)=>{
                 amount: listing.price
             }
         })
+
+        const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+        const session = await stripeInstance.checkout.sessions.create({
+            success_url: `${origin}/loading/my-orders`,
+            cancel_url: `${origin}/marketplace`,
+            line_items:[
+                {
+                    price_data:{
+                        currency: "usd",
+                        product_data: {
+                            name: `Purchasing Account @${listing.username} of ${listing.platform}`
+                        },
+                        unit_amount: Math.floor(transaction.amount )* 100,
+                    },
+                    quantity: 1
+
+                }
+            ],
+            mode: 'payment',
+            metadata: {
+                transactionId: transaction.id,
+                appId: "flipearn",
+            },
+            expires_at: Math.floor(Date.now()/ 1000) + 30 * 60,  //expires in 30 mins
+
+        });
+
+        return res.json({paymentLink: session.url})
+
+
         
     } catch (error) {
+        console.log(error);
+        res.status(500).json({message: error.code || error.message});
         
     }
     
