@@ -20,7 +20,7 @@ export const addListing = async (req, res)=>{
             }
         }
 
-        const accountDetails = JSON.perse(req.body.accountDetails)
+        const accountDetails = JSON.parse(req.body.accountDetails)
 
         accountDetails.followers_count = parseFloat(accountDetails.followers_count)
         accountDetails.engagement_rate = parseFloat(accountDetails.engagement_rate)
@@ -37,7 +37,7 @@ export const addListing = async (req, res)=>{
     
         const uploadImages = req.files.map(async(file)=>{
             const response = await imagekit.files.upload({
-                file:FileSystem.createReadStream('file.path'),
+                file: fs.createReadStream(file.path),
                 fileName: `${Date.now()}.jpg`,
                 folder: "flip-earn",
                 transformation:{pre:"w-1280, h-auto"}
@@ -171,7 +171,7 @@ export const updateListing = async (req, res)=>{
         if(req.files.length > 0){
             const uploadImages = req.files.map(async(file)=>{
             const response = await imagekit.files.upload({
-                file:FileSystem.createReadStream('file.path'),
+                file: fs.createReadStream(file.path),
                 fileName: `${Date.now()}.jpg`,
                 folder: "flip-earn",
                 transformation:{pre:"w-1280, h-auto"}
@@ -184,15 +184,15 @@ export const updateListing = async (req, res)=>{
         const images = await Promise.all(uploadImages);
 
         const listings = await prisma.listing.update({
-            where: {is: accountDetails.id, ownerId: userId},
+            where: {id: accountDetails.id, ownerId: userId},
             data: {
                 ownerId: userId,
                 ...accountDetails,
-                images:[...accountDetails, ...images]
+                images:[...accountDetails.images, ...images]
             }
 
         })
-        return res.json({message: "Account updated successfully", listing});
+        return res.json({message: "Account updated successfully", listing: listings});
 
         }
         return res.json({message: "Account updated successfully", listing});
@@ -295,7 +295,7 @@ export const addCredential = async (req, res)=>{
         const  {userId} = await req.auth();
         const {listingId, credential } = req.body;
 
-        if(credential.length === 0 || !lisitngId){
+        if(credential.length === 0 || !listingId){
             return res.status(400).json({message: "Missing Fields"});
         }
 
@@ -304,19 +304,19 @@ export const addCredential = async (req, res)=>{
         })
 
         if(!listing){
-            return res.status(400).json({message: "Lisitng not found or you are not the owner"});
+            return res.status(400).json({message: "Listing not found or you are not the owner"});
         }
 
         await prisma.credential.create({
             data:{
-                lisitngId,
+                listingId,
                 originalCredential: credential
             }
         })
 
-        await prisma.lisitng.update({
-            where: {id:listingId},
-            data:{isCredentialSubmitted: true}
+        await prisma.listing.update({
+            where: {id: listingId},
+            data: {isCredentialSubmitted: true}
         })
         
         return res.json({message: "Credential added successfully"});

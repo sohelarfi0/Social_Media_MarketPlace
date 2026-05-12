@@ -1,10 +1,10 @@
 import { sendEventResponseSchema } from 'inngest/types';
-import stripe from 'stripe';
-import prisma from '../configs/prisma';
-import { inngest } from '../inngest';
+import Stripe from 'stripe';
+import prisma from '../configs/prisma.js';
+import { inngest } from '../inngest/index.js';
 
 export const stripeWebhook = async (request, response)=>{
-    const stripeInstance = new  stripe(process.env.STRIPE_SECRET_KEY);
+    const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
     const endPointSecret = process.env.STRIPE_WEBHOOK_SECRET
     let event;
 
@@ -13,7 +13,7 @@ export const stripeWebhook = async (request, response)=>{
 
         const signature = request.headers['stripe-signature'];
         try{
-            event = stripe.webhooks.constructEvent(
+            event = Stripe.webhooks.constructEvent(
                 request.body,
                 signature,
                 endPointSecret

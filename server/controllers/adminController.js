@@ -8,7 +8,7 @@ export const isAdmin = async (req , res )=>{
         return res.json({isAdmin:true})
     }catch(error){
         console.log(error);
-        res.this.status(400).json({message: error.code || error.message});
+        res.status(400).json({message: error.code || error.message});
     }
 }
 
@@ -36,7 +36,7 @@ export const getDashboard = async (req, res)=>{
             take: 5,
             include: {owner: true},
         })
-        return res.json({getDashboardData: {totalListings, totalRevenue, activListings, totalUser, recentListings}})
+        return res.json({getDashboardData: {totalListings, totalRevenue, activeListings, totalUser, recentListings}})
     }catch(error)
     {
         console.log(error);
