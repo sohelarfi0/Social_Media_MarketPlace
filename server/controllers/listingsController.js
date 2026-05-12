@@ -2,6 +2,7 @@ import imagekit from '../configs/imageKit.js';
 import prisma from '../configs/prisma.js';
 import fs from 'fs';
 import Stripe from 'stripe';
+import { inngest } from '../inngest/index.js';
 
 
 // controller function for adding listing to database
@@ -265,6 +266,13 @@ export const deleteUserListing = async (req, res)=>{
         // if password has been changed, send the new password to the owner 
         if(listing.isCredentialChanged){
             // send email to owner
+            await inngest.send({
+                name: "app/listing-deleted",
+                data:{listing,listingId}
+                
+            })
+
+
         }
         await prisma.listing.update({
             where:{id:listingId},

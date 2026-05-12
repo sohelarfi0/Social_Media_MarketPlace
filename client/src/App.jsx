@@ -53,7 +53,7 @@ const App = () => {
         <Route path="/edit-listings/:id" element={<ManageListings />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/my-orders" element={<MyOrders />} />
-        <Route path="/loading" element={<Loading />} />
+        <Route path="/loading/:nextUrl" element={<Loading />} />
         <Route path='/admin' element={<Layout /> }>
           <Route index element={<Dashboard/>}/>
           <Route path='verify-credentials' element={<CredentialVerify />}/>
