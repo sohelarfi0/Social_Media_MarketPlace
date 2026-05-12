@@ -82,8 +82,7 @@ const syncUserUpdation = inngest.createFunction(
 
 // Inngest Function to send purchase email to the customer
 const sendPurchaseEmail = inngest.createFunction(
-    {id: 'send-purchase-email'},
-    {event: "app/purchase"},
+    {id: 'send-purchase-email', triggers: [{event: "app/purchase"}]},
     async({event})=>{
         const {transaction} = event.data;
         const customer = await prisma.user.findFirst({
@@ -117,8 +116,7 @@ const sendPurchaseEmail = inngest.createFunction(
 
 // Inngest function to send new credentials for deleted listings
 const sendNewCredentials = inngest.createFunction(
-    {id: 'send-new-credentials'},
-    {event: "app/listing-deleted"},
+    {id: 'send-new-credentials', triggers: [{event: "app/listing-deleted"}]},
     async({event})=>{
         const {listing, listingId} = event.data;
  
