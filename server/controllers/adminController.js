@@ -162,18 +162,17 @@ export const markCredentialVerified = async (req, res)=>{
 export const getAllUnChangeedListings = async (req, res)=>{
     try{
         const listings = await prisma.listing.findMany({
-            wher: {
+            where: {
                 isCredentialVerified: true,
                 isCredentialChanged: false,
                 status: {not: "deleted"}
             },
             orderBy: {createdAt: "desc"}
-
-           
         })
         if(!listings || listings.length === 0){
             return res.json({listings: []});
         }
+        return res.json({listings});
     }catch(error)
     {
         console.log(error);
@@ -187,8 +186,16 @@ export const changeCredential = async (req, res)=>{
         const {listingId} = req.params;
         const {newCredential, credential} = req.body;
 
+        const existingCredential = await prisma.credential.findFirst({
+            where: {listingId}
+        })
+        
+        if(!existingCredential){
+            return res.status(404).json({message: "Credential not found"});
+        }
+
         await prisma.credential.update({
-            where: {id: credentialId ,listingId},
+            where: {id: existingCredential.id},
             data: {updatedCredential: newCredential}
         })
         await prisma.listing.update({
@@ -236,7 +243,7 @@ export const getAllTransactions = async (req, res)=>{
 
 
 // controller for getting all withdraw requests
-export const getAllWithdrawRequests = async (ReadQueue, res)=>{
+export const getAllWithdrawRequests = async (req, res)=>{
     try{
         const requests = await prisma.withdrawal.findMany({
             orderBy: {createdAt: "asc"},

@@ -1,6 +1,5 @@
 import imagekit from '../configs/imageKit.js';
 import prisma from '../configs/prisma.js';
-import fs from 'fs';
 import Stripe from 'stripe';
 import { inngest } from '../inngest/index.js';
 
@@ -37,7 +36,7 @@ export const addListing = async (req, res)=>{
     
         const uploadImages = req.files.map(async(file)=>{
             const response = await imagekit.files.upload({
-                file: fs.createReadStream(file.path),
+                file: file.buffer,
                 fileName: `${Date.now()}.jpg`,
                 folder: "flip-earn",
                 transformation:{pre:"w-1280, h-auto"}
@@ -171,7 +170,7 @@ export const updateListing = async (req, res)=>{
         if(req.files.length > 0){
             const uploadImages = req.files.map(async(file)=>{
             const response = await imagekit.files.upload({
-                file: fs.createReadStream(file.path),
+                file: file.buffer,
                 fileName: `${Date.now()}.jpg`,
                 folder: "flip-earn",
                 transformation:{pre:"w-1280, h-auto"}

@@ -69,11 +69,9 @@ export const stripeWebhook = async (request, response)=>{
             }
             
         } catch (error) {
-            
+            console.log('Webhook processing error:', error);
         }
-
     }
 
-    
-
+    return response.status(200).json({ received: true });
 }

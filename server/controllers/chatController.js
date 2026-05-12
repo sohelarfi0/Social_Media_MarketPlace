@@ -97,7 +97,7 @@ export const getAllUserChats = async (req, res) =>{
 export const sendChatMessage = async (req, res)=>{
     try{
         const {userId} = await req.auth();
-        const {chatId, message} = req. body;
+        const {chatId, message} = req.body;
 
         const  chat = await prisma.chat.findFirst({
             where:{
